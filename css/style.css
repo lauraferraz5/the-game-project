@@ -1,15 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@900&display=swap");
+
 * {
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
+  font-family: "Grenze Gotisch", cursive;
+}
+
+body {
   padding: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  background-color: #4e6b99;
+  height: 800px;
+  background-image: url(../images/pageBackground.jpg);
+  background-size: cover;
+  background-position: center;
 }
 
 canvas {
-  border: 2px solid red;
+  background-color: #385466;
+  border: 6px solid #05144f;
+  border-radius: 3%;
 }
 
-div {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+.game-intro {
+  padding: 0% 10%;
+  align-items: stretch;
+  top: 50%;
+  left: 50%;
+}
+
+.game-intro h1 {
+  font-size: 40px;
+  color: white;
+  text-shadow: 4px 4px #0b536b;
+  margin: 14px;
+}
+
+.game-intro p {
+  font-size: 40px;
+  color: #4f053d;
+  text-shadow: 2px 2px #0b536b;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+#startingArea h1 {
+  margin-top: 8%;
+  margin-bottom: 3%;
+  letter-spacing: 5px;
+  font-size: 90px;
+  font-style: italic;
+  color: #bad6d1;
+  text-shadow: 5px 5px #36172e;
+}
+
+body button {
+  background-color: #804b73;
+  box-shadow: 1px 3px 0 #5c3552;
+  color: white;
+  padding: 0.5em 1.5em;
+  position: relative;
+  text-transform: uppercase;
+  border: 3px solid #690a51;
+  border-radius: 3%;
+  text-shadow: 2px 2px #0b536b;
+  font-size: 25px;
+  letter-spacing: 3px;
+}
+
+button:hover {
+  background-color: #5c3252;
+}
+
+button:active {
+  box-shadow: none;
+  background-color: #c79bbc;
+  top: 5px;
+}
+
+#game-board {
+  float: left;
+  padding: 20px 0px;
 }

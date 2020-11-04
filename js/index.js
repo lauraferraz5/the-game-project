@@ -5,49 +5,73 @@ const ctx = canvas.getContext("2d");
 const backgroundImg = new Image();
 backgroundImg.src = "./images/background.png";
 
-const playerImgRun = new Image();
-playerImgRun.src = "./images/run1.png";
+const playerImgRun1 = new Image();
+playerImgRun1.src = "./images/run1.png";
+const playerImgRun2 = new Image();
+playerImgRun2.src = "./images/run2.png";
+const playerImgRun3 = new Image();
+playerImgRun3.src = "./images/run3.png";
+const playerImgRun4 = new Image();
+playerImgRun4.src = "./images/run4.png";
+const playerImgRun5 = new Image();
+playerImgRun5.src = "./images/run5.png";
+const playerImgRun6 = new Image();
+playerImgRun6.src = "./images/run6.png";
+const playerImgRun7 = new Image();
+playerImgRun7.src = "./images/run7.png";
+const playerImgRun8 = new Image();
+playerImgRun8.src = "./images/run8.png";
 
-const imageBat = new Image();
-imageBat.src = "./images/Bat2.png";
-
-const imageGhost = new Image();
-imageGhost.src = "./images/Ghost4.png";
-
-const imagePumpkinhead = new Image();
-imagePumpkinhead.src = "./images/pumpkinhead4.png";
-
-const imageVampire = new Image();
-imageVampire.src = "./images/vampire4.png";
-
-const imageWerewolf = new Image();
-imageWerewolf.src = "./images/werewolf4.png";
-
-const imageWitch = new Image();
-imageWitch.src = "./images/witch4.png";
+const pumpkinImg = new Image();
+pumpkinImg.src = "./images/pumpkin.png";
 
 const gameSound = new Audio();
 gameSound.src = "./sounds/backgroundSound.wav";
 gameSound.volume = 0.5;
 
+let createdObstacles = [];
+
+let frames = 0;
+
+function createObstacles() {
+  frames += 1;
+  let random = Math.floor(Math.random() * 4);
+  if (frames % (random * 100) === 0) {
+    createdObstacles.push(
+      new Obstacle(canvas.width, canvas.height - 75, 40, 40)
+    );
+  }
+}
+
+function moveObstacles() {
+  for (let i = 0; i < createdObstacles.length; i++) {
+    createdObstacles[i].draw();
+    createdObstacles[i].move();
+  }
+}
+
+let spriteCount = 0;
+
+let jumpCount = 0;
+
 class Obstacle {
-  constructor(x, y, width, height, image) {
+  constructor(x, y, width, height, obstacles) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.image = image;
+    this.obstacles = pumpkinImg;
     this.speedX = 0;
     this.speedY = 0;
   }
 
   move() {
-    this.x += this.speed;
-    this.speedY += this.speedY;
+    this.speedX = -2;
+    this.x += this.speedX;
   }
 
   draw() {
-    ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    ctx.drawImage(this.obstacles, this.x, this.y, this.width, this.height);
   }
 
   left() {
@@ -68,8 +92,8 @@ class Obstacle {
 }
 
 class Game {
-  constructor(backgroundImg, playerImgRun, canvas, ctx) {
-    this.playerImgRun = playerImgRun;
+  constructor(backgroundImg, playerImgRun1, canvas, ctx) {
+    this.playerImgRun1 = playerImgRun1;
     this.backgroundImg = backgroundImg;
     this.backPosition = 0;
     this.speedX = -1;
@@ -77,7 +101,6 @@ class Game {
     this.animationId = 0;
     this.leftLimit = 0;
     this.rightLimit = 0;
-    this.obstacles = [];
     this.frames = 0;
     this.score = 0;
     this.canvas = canvas;
@@ -90,21 +113,21 @@ class Game {
     this.backgroundX %= this.canvas.width;
   }
 
-  updateObstacles() {
-    this.frames++;
-    this.obstacles.map((obstacle) => {
-      obstacle.x--;
-      obstacle.update(this.ctx);
-    });
+  // updateObstacles() {
+  //  this.frames++;
+  //     this.randomObstacles.map((myObstacles) => {
+  //       obstacle.x--;
+  //       obstacle.update(this.ctx);
+  //     });
 
-    if (this.frames % 130 === 0) {
-      let minHeight = 20;
-      let maxHeight = 50;
-      let height = Math.floor(
-        Math.random() * (maxHeight - minHeight + 1) + minHeight
-      );
-    }
-  }
+  //     if (this.frames % 130 === 0) {
+  //       let minHeight = 20;
+  //       let maxHeight = 50;
+  //       let height = Math.floor(
+  //         Math.random() * (maxHeight - minHeight + 1) + minHeight
+  //       );
+  //     }
+  //   }
 
   updateGame = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -112,37 +135,42 @@ class Game {
     this.backgroundImg.move();
     this.backgroundImg.draw();
 
-    this.playerImgRun.move();
-    this.playerImgRun.draw();
+    this.playerImgRun1.move();
+    this.playerImgRun1.draw();
+
+    createObstacles();
+    moveObstacles();
+
+    //this.updateScore(this.score);
 
     this.animationId = requestAnimationFrame(this.updateGame);
   };
 
-  updateScore() {
-    if (this.frames % 30 === 0) {
-      this.score++;
-    }
-    this.ctx.fillStyle = "white";
-    this.ctx.font = "20px Arial";
-    this.ctx.fillText(`Score: ${this.score}`, canvas.width - 30, 50);
-  }
+  //   updateScore() {
+  //     if (this.frames % 30 === 0) {
+  //       this.score++;
+  //     }
+  //     this.ctx.fillStyle = "white";
+  //     this.ctx.font = "20px Arial";
+  //     this.ctx.fillText(`Score: ${this.score}`, canvas.width - 30, 50);
+  //  }
 
-  checkGameOver() {
-    const crashed = game.obstacles.some((obstacle) => {
-      return game.playerImgRun.isCrashedWith(obstacle);
-    });
-    if (crashed) {
-      cancelAnimationFrame(this.animationId);
-      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.fillStyle = "black";
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.fillStyle = "red";
-      this.ctx.font = "80px Arial";
-      this.ctx.fillText(`Game Over`, 50, 250);
-      this.ctx.font = "25px Arial";
-      this.ctx.fillText(`Your score: ${this.score}`, 100, 200);
-    }
-  }
+  //   checkGameOver() {
+  //     const crashed = game.obstacles.some((obstacle) => {
+  //       return game.playerImgRun1.isCrashedWith(obstacle);
+  //     });
+  //     if (crashed) {
+  //       cancelAnimationFrame(this.animationId);
+  //       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  //       this.ctx.fillStyle = "black";
+  //       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  //       this.ctx.fillStyle = "red";
+  //       this.ctx.font = "80px Arial";
+  //       this.ctx.fillText(`Game Over`, 50, 250);
+  //       this.ctx.font = "25px Arial";
+  //       this.ctx.fillText(`Your score: ${this.score}`, 100, 200);
+  //     }
+  //   }
 }
 
 class Background {
@@ -151,7 +179,7 @@ class Background {
     this.y = y;
     this.width = width;
     this.height = height;
-    this.speed = -1;
+    this.speed = -2;
     this.backgroundImg = backgroundImg;
   }
 
@@ -183,24 +211,68 @@ class Background {
 }
 
 class Player {
-  constructor(x, y, width, height) {
+  constructor(x, y, width, height, spriteCount) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
     this.speedX = 0;
     this.speedY = 0;
+    this.spriteCount = 0;
   }
 
   move() {
     this.x += this.speedX;
-    this.x %= this.width;
-    this.y += this.speedY;
   }
 
   draw() {
-    ctx.drawImage(playerImgRun, this.x, this.y, this.width, this.height);
+    if (this.spriteCount < 2) {
+      ctx.drawImage(playerImgRun1, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 4) {
+      ctx.drawImage(playerImgRun2, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 6) {
+      ctx.drawImage(playerImgRun3, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 8) {
+      ctx.drawImage(playerImgRun4, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 10) {
+      ctx.drawImage(playerImgRun5, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 12) {
+      ctx.drawImage(playerImgRun6, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 14) {
+      ctx.drawImage(playerImgRun7, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else if (this.spriteCount < 16) {
+      ctx.drawImage(playerImgRun8, this.x, this.y, this.width, this.height);
+      this.spriteCount += 1;
+    } else {
+      ctx.drawImage(playerImgRun1, this.x, this.y, this.width, this.height);
+      this.spriteCount = 0;
+    }
   }
+
+  //   gravity: function() {
+  //     player.speedY+= 1.1;
+  //     player.x += player.speedX;
+  //     player.y += player.speedY;
+  //     player.speedX *= 0.9;
+  //     player.speedY *= 0.9;
+
+  //     if (player.y > 400 - 60 - 36) {
+  //         player.y = 400 - 60 - 36;
+  //         player.speedY = 0;
+  //         jumpCount = 2;
+  //     }
+  //  }
+
+  //     jump(value) {
+  //         this.speedY -= value;
+  //     }
 
   left() {
     return this.x;
@@ -231,11 +303,9 @@ class Player {
 
 window.addEventListener("load", () => {
   function startGame() {
-    btnStart.parentElement.style.display = "none";
-    canvas.style.display = "block";
     const game = new Game(
       new Background(0, 0, canvas.width, canvas.height),
-      new Player(canvas.width - 630, canvas.height - 80, 100, 100)
+      new Player(canvas.width - 630, canvas.height - 120, 100, 100)
     );
 
     game.updateGame();
