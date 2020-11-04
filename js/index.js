@@ -38,7 +38,7 @@ function createObstacles() {
   let random = Math.floor(Math.random() * 4);
   if (frames % (random * 100) === 0) {
     createdObstacles.push(
-      new Obstacle(canvas.width, canvas.height - 75, 40, 40)
+      new Obstacle(canvas.width, canvas.height - 66, 40, 40)
     );
   }
 }
@@ -53,6 +53,8 @@ function moveObstacles() {
 let spriteCount = 0;
 
 let jumpCount = 0;
+
+let score = 0;
 
 class Obstacle {
   constructor(x, y, width, height, obstacles) {
@@ -113,27 +115,13 @@ class Game {
     this.backgroundX %= this.canvas.width;
   }
 
-  // updateObstacles() {
-  //  this.frames++;
-  //     this.randomObstacles.map((myObstacles) => {
-  //       obstacle.x--;
-  //       obstacle.update(this.ctx);
-  //     });
-
-  //     if (this.frames % 130 === 0) {
-  //       let minHeight = 20;
-  //       let maxHeight = 50;
-  //       let height = Math.floor(
-  //         Math.random() * (maxHeight - minHeight + 1) + minHeight
-  //       );
-  //     }
-  //   }
-
   updateGame = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     this.backgroundImg.move();
     this.backgroundImg.draw();
+
+    this.playerImgRun1.gravity();
 
     this.playerImgRun1.move();
     this.playerImgRun1.draw();
@@ -141,36 +129,38 @@ class Game {
     createObstacles();
     moveObstacles();
 
-    //this.updateScore(this.score);
+    this.updateScore(this.score);
 
     this.animationId = requestAnimationFrame(this.updateGame);
+
+    this.checkGameOver();
   };
 
-  //   updateScore() {
-  //     if (this.frames % 30 === 0) {
-  //       this.score++;
-  //     }
-  //     this.ctx.fillStyle = "white";
-  //     this.ctx.font = "20px Arial";
-  //     this.ctx.fillText(`Score: ${this.score}`, canvas.width - 30, 50);
-  //  }
+  updateScore() {
+    if (this.frames % 50 === 0) {
+      this.score++;
+    }
+    this.ctx.fillStyle = "white";
+    this.ctx.font = "20px Arial";
+    this.ctx.fillText(`Score: ${this.score}`, canvas.width - 120, 30);
+  }
 
-  //   checkGameOver() {
-  //     const crashed = game.obstacles.some((obstacle) => {
-  //       return game.playerImgRun1.isCrashedWith(obstacle);
-  //     });
-  //     if (crashed) {
-  //       cancelAnimationFrame(this.animationId);
-  //       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  //       this.ctx.fillStyle = "black";
-  //       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  //       this.ctx.fillStyle = "red";
-  //       this.ctx.font = "80px Arial";
-  //       this.ctx.fillText(`Game Over`, 50, 250);
-  //       this.ctx.font = "25px Arial";
-  //       this.ctx.fillText(`Your score: ${this.score}`, 100, 200);
-  //     }
-  //   }
+  checkGameOver() {
+    const crashed = createdObstacles.some((obstacle) => {
+      return this.playerImgRun1.isCrashedWith(obstacle);
+    });
+    if (crashed) {
+      cancelAnimationFrame(this.animationId);
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillStyle = "black";
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillStyle = "red";
+      this.ctx.font = "80px Arial";
+      this.ctx.fillText(`Game Over`, 50, 250);
+      this.ctx.font = "25px Arial";
+      this.ctx.fillText(`Your score: ${this.score}`, 100, 200);
+    }
+  }
 }
 
 class Background {
@@ -256,23 +246,21 @@ class Player {
     }
   }
 
-  //   gravity: function() {
-  //     player.speedY+= 1.1;
-  //     player.x += player.speedX;
-  //     player.y += player.speedY;
-  //     player.speedX *= 0.9;
-  //     player.speedY *= 0.9;
+  gravity() {
+    this.speedY += 1.1;
+    this.y += this.speedY;
+    this.speedY *= 0.9;
 
-  //     if (player.y > 400 - 60 - 36) {
-  //         player.y = 400 - 60 - 36;
-  //         player.speedY = 0;
-  //         jumpCount = 2;
-  //     }
-  //  }
+    if (this.y > canvas.height - 120) {
+      this.y = canvas.height - 120;
+      this.speedY = 0;
+      jumpCount = 2;
+    }
+  }
 
-  //     jump(value) {
-  //         this.speedY -= value;
-  //     }
+  jump(value) {
+    this.speedY -= value;
+  }
 
   left() {
     return this.x;
@@ -292,6 +280,7 @@ class Player {
 
   isCrashedWith(obstacle) {
     const condition = !(
+      this.bottom() < obstacle.top() ||
       this.top() > obstacle.bottom() ||
       this.right() < obstacle.left() ||
       this.left() > obstacle.right()
@@ -305,20 +294,26 @@ window.addEventListener("load", () => {
   function startGame() {
     const game = new Game(
       new Background(0, 0, canvas.width, canvas.height),
-      new Player(canvas.width - 630, canvas.height - 120, 100, 100)
+      new Player(canvas.width - 630, canvas.height - 120, 100, 100),
+      canvas,
+      ctx
     );
+
+    //gameSound.play();
 
     game.updateGame();
 
-    // document.addEventListener("keydown", (event) => {
-    //   if (event.key === "Spacecharacter") {
-    //     game.player. = 180;
-    //   }
-    // });
-
-    // document.addEventListener("keyup", () => {
-    //   game.player.height = 0;
-    // });
+    document.addEventListener("keydown", (event) => {
+      if (jumpCount <= 2 && jumpCount > 0) {
+        if (event.key === " ") {
+          // Spacecharacter
+          game.playerImgRun1.jump(25);
+          jumpCount--;
+          //  jump.play();
+        }
+      }
+    });
   }
+
   btnStart.addEventListener("click", startGame);
 });
