@@ -29,13 +29,23 @@ const gameSound = new Audio();
 gameSound.src = "./sounds/backgroundSound.wav";
 gameSound.volume = 0.5;
 
+const jumpSound = new Audio();
+jumpSound.src = "./sounds/jumpSound.wav";
+jumpSound.volume = 0.5;
+
 let createdObstacles = [];
 
 let frames = 0;
 
+let spriteCount = 0;
+
+let jumpCount = 0;
+
+let score = 0;
+
 function createObstacles() {
   frames += 1;
-  let random = Math.floor(Math.random() * 4);
+  let random = Math.floor(Math.random() * 4) + 1;
   if (frames % (random * 100) === 0) {
     createdObstacles.push(
       new Obstacle(canvas.width, canvas.height - 66, 40, 40)
@@ -49,12 +59,6 @@ function moveObstacles() {
     createdObstacles[i].move();
   }
 }
-
-let spriteCount = 0;
-
-let jumpCount = 0;
-
-let score = 0;
 
 class Obstacle {
   constructor(x, y, width, height, obstacles) {
@@ -103,8 +107,6 @@ class Game {
     this.animationId = 0;
     this.leftLimit = 0;
     this.rightLimit = 0;
-    this.frames = 0;
-    this.score = 0;
     this.canvas = canvas;
     this.ctx = ctx;
     this.backgroundX = 0;
@@ -137,12 +139,12 @@ class Game {
   };
 
   updateScore() {
-    if (this.frames % 50 === 0) {
-      this.score++;
+    if (this.animationId % 10 === 0) {
+      score += 1;
     }
     this.ctx.fillStyle = "white";
     this.ctx.font = "20px Arial";
-    this.ctx.fillText(`Score: ${this.score}`, canvas.width - 120, 30);
+    this.ctx.fillText(`Score: ${score}`, canvas.width - 120, 50);
   }
 
   checkGameOver() {
@@ -151,14 +153,16 @@ class Game {
     });
     if (crashed) {
       cancelAnimationFrame(this.animationId);
+      gameSound.pause();
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = "black";
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = "red";
-      this.ctx.font = "80px Arial";
-      this.ctx.fillText(`Game Over`, 50, 250);
-      this.ctx.font = "25px Arial";
-      this.ctx.fillText(`Your score: ${this.score}`, 100, 200);
+      this.ctx.font = "100px Arial";
+      this.ctx.fillText(`Game Over`, 120, 200);
+      this.ctx.fillStyle = "white";
+      this.ctx.font = "40px Arial";
+      this.ctx.fillText(`Your score: ${score}`, 220, 280);
     }
   }
 }
@@ -247,9 +251,11 @@ class Player {
   }
 
   gravity() {
-    this.speedY += 1.1;
+    this.speedY += 0.6;
+    this.x += this.speedX;
     this.y += this.speedY;
     this.speedY *= 0.9;
+    this.speedX *= 0.9;
 
     if (this.y > canvas.height - 120) {
       this.y = canvas.height - 120;
@@ -292,9 +298,14 @@ class Player {
 
 window.addEventListener("load", () => {
   function startGame() {
+    createdObstacles = [];
+    frames = 0;
+    spriteCount = 0;
+    jumpCount = 0;
+    score = 0;
     const game = new Game(
       new Background(0, 0, canvas.width, canvas.height),
-      new Player(canvas.width - 630, canvas.height - 120, 100, 100),
+      new Player(canvas.width - 630, canvas.height - 120, 70, 100),
       canvas,
       ctx
     );
@@ -305,15 +316,18 @@ window.addEventListener("load", () => {
 
     document.addEventListener("keydown", (event) => {
       if (jumpCount <= 2 && jumpCount > 0) {
-        if (event.key === " ") {
+        if (event.key === "j") {
           // Spacecharacter
-          game.playerImgRun1.jump(25);
+          game.playerImgRun1.jump(20);
           jumpCount--;
-          //  jump.play();
+          jumpSound.play();
         }
       }
     });
   }
 
-  btnStart.addEventListener("click", startGame);
+  btnStart.addEventListener("click", () => {
+    startGame();
+    btnStart.blur(); // blur tira o foco do botão start
+  });
 });
