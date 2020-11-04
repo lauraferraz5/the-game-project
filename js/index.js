@@ -316,7 +316,7 @@ window.addEventListener("load", () => {
 
     document.addEventListener("keydown", (event) => {
       if (jumpCount <= 2 && jumpCount > 0) {
-        if (event.key === "j") {
+        if (event.key === "w") {
           // Spacecharacter
           game.playerImgRun1.jump(20);
           jumpCount--;
