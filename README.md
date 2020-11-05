@@ -17,6 +17,8 @@
 <p>The Halloween Night is an Endless Runner 2D style game.</p>
 <p>Help the warrior survive by jumping over obstacles!</p>
 
+<img src="./images/game.png" alt="The game screen"/>
+
 <h2>How to Play</h2>
 
 <ul>
