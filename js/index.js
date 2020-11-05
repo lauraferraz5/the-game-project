@@ -22,6 +22,13 @@ playerImgRun7.src = "./images/run7.png";
 const playerImgRun8 = new Image();
 playerImgRun8.src = "./images/run8.png";
 
+const playerJump1 = new Image();
+playerJump1.src = "./images/jump1.png";
+const playerJump2 = new Image();
+playerJump2.src = "./images/jump2.png";
+const playerJump3 = new Image();
+playerJump3.src = "./images/jump3.png";
+
 const pumpkinImg = new Image();
 pumpkinImg.src = "./images/pumpkin.png";
 
@@ -42,6 +49,8 @@ let spriteCount = 0;
 let jumpCount = 0;
 
 let score = 0;
+
+let gaming = false;
 
 function createObstacles() {
   frames += 1;
@@ -72,7 +81,7 @@ class Obstacle {
   }
 
   move() {
-    this.speedX = -2;
+    this.speedX = -5;
     this.x += this.speedX;
   }
 
@@ -213,6 +222,7 @@ class Player {
     this.speedX = 0;
     this.speedY = 0;
     this.spriteCount = 0;
+    this.jumping = false;
   }
 
   move() {
@@ -220,38 +230,54 @@ class Player {
   }
 
   draw() {
-    if (this.spriteCount < 2) {
-      ctx.drawImage(playerImgRun1, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 4) {
-      ctx.drawImage(playerImgRun2, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 6) {
-      ctx.drawImage(playerImgRun3, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 8) {
-      ctx.drawImage(playerImgRun4, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 10) {
-      ctx.drawImage(playerImgRun5, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 12) {
-      ctx.drawImage(playerImgRun6, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 14) {
-      ctx.drawImage(playerImgRun7, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
-    } else if (this.spriteCount < 16) {
-      ctx.drawImage(playerImgRun8, this.x, this.y, this.width, this.height);
-      this.spriteCount += 1;
+    if (this.jumping === true) {
+      if (this.spriteCount < 2) {
+        ctx.drawImage(playerJump1, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 16) {
+        ctx.drawImage(playerJump2, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 30) {
+        ctx.drawImage(playerJump3, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else {
+        ctx.drawImage(playerJump1, this.x, this.y, this.width, this.height);
+        this.spriteCount = 0;
+      }
     } else {
-      ctx.drawImage(playerImgRun1, this.x, this.y, this.width, this.height);
-      this.spriteCount = 0;
+      if (this.spriteCount < 2) {
+        ctx.drawImage(playerImgRun1, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 4) {
+        ctx.drawImage(playerImgRun2, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 6) {
+        ctx.drawImage(playerImgRun3, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 8) {
+        ctx.drawImage(playerImgRun4, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 10) {
+        ctx.drawImage(playerImgRun5, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 12) {
+        ctx.drawImage(playerImgRun6, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 14) {
+        ctx.drawImage(playerImgRun7, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else if (this.spriteCount < 16) {
+        ctx.drawImage(playerImgRun8, this.x, this.y, this.width, this.height);
+        this.spriteCount += 1;
+      } else {
+        ctx.drawImage(playerImgRun1, this.x, this.y, this.width, this.height);
+        this.spriteCount = 0;
+      }
     }
   }
 
   gravity() {
-    this.speedY += 0.6;
+    this.speedY += 0.3;
     this.y += this.speedY;
     this.speedY *= 0.9;
 
@@ -259,11 +285,13 @@ class Player {
       this.y = canvas.height - 120;
       this.speedY = 0;
       jumpCount = 2;
+      this.jumping = false;
     }
   }
 
   jump(value) {
     this.speedY -= value;
+    this.jumping = true;
   }
 
   left() {
@@ -296,6 +324,7 @@ class Player {
 
 window.addEventListener("load", () => {
   function startGame() {
+    gaming = true;
     createdObstacles = [];
     frames = 0;
     spriteCount = 0;
@@ -308,15 +337,15 @@ window.addEventListener("load", () => {
       ctx
     );
 
-    //gameSound.play();
+    gameSound.play();
 
     game.updateGame();
 
     document.addEventListener("keydown", (event) => {
       if (jumpCount <= 2 && jumpCount > 0) {
+        console.log("oi");
         if (event.key === "w") {
-          // Spacecharacter
-          game.playerImgRun1.jump(20);
+          game.playerImgRun1.jump(18);
           jumpCount--;
           jumpSound.play();
         }
@@ -325,7 +354,12 @@ window.addEventListener("load", () => {
   }
 
   btnStart.addEventListener("click", () => {
-    startGame();
-    btnStart.blur(); // blur tira o foco do botão start
+    if (gaming === false) {
+      startGame();
+      btnStart.blur(); // blur tira o foco do botão start
+    } else {
+      window.location.reload();
+      console.log("kkk");
+    }
   });
 });
