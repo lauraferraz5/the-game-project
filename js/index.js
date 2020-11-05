@@ -54,8 +54,8 @@ let gaming = false;
 
 function createObstacles() {
   frames += 1;
-  let random = Math.floor(Math.random() * 4) + 1;
-  if (frames % (random * 100) === 0) {
+  let random = Math.floor(Math.random() * 3) + 1;
+  if (frames % (random * 70) === 0) {
     createdObstacles.push(
       new Obstacle(canvas.width, canvas.height - 66, 40, 40)
     );
@@ -81,7 +81,7 @@ class Obstacle {
   }
 
   move() {
-    this.speedX = -5;
+    this.speedX = -6;
     this.x += this.speedX;
   }
 
@@ -338,6 +338,7 @@ window.addEventListener("load", () => {
     );
 
     gameSound.play();
+    gameSound.loop = true;
 
     game.updateGame();
 
