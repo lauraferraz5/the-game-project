@@ -252,10 +252,8 @@ class Player {
 
   gravity() {
     this.speedY += 0.6;
-    this.x += this.speedX;
     this.y += this.speedY;
     this.speedY *= 0.9;
-    this.speedX *= 0.9;
 
     if (this.y > canvas.height - 120) {
       this.y = canvas.height - 120;
