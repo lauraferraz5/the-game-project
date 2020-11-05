@@ -2,7 +2,7 @@
 
 <p>The Halloween Night is a game built in HTML, CSS, canvas and JavaScript.</p>
 
-<p>Click HERE to play!</p>
+<p>Click <a href="https://lauraferraz5.github.io/the-game-project/" target="_blank">HERE</a> to play!</p>
 <p>For better experience, run this game in a browser on you nootebook or desktop PC. Unfortunatelly this game is not compatible with mobile, yet.</p>
 
 <h2>Installation</h2>
